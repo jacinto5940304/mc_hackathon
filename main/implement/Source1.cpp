@@ -8,7 +8,7 @@ using namespace std;
 
 int main() {
     // Open the webcam
-   // string str = "rtsp://10.31.51.55:8080/h264_pcm.sdp";//"rtsp://admin:12345@10.72.108.141:8554/live";
+   
     VideoCapture cap(0);
     if (!cap.isOpened()) {
         cout << "NO"<<endl;
@@ -146,7 +146,7 @@ int main() {
                 else if (slope_tan<=0 && dir_x>0)slope = atan(slope_tan) * 180.0 / 3.14+360;
                 else if (slope_tan>0 && dir_x<=0)slope = atan(slope_tan) * 180.0 / 3.14+180;
                 else slope = atan(slope_tan) * 180.0 / 3.14+180;
-                //slope = (dir_x > 0) ? atan(slope_tan) * 180.0 / 3.14 :180+atan(slope_tan) * 180.0 / 3.14;
+               
                 
                 out << slope << endl;
                 cout <<slope<< endl;
@@ -167,7 +167,7 @@ int main() {
         }
 
         // Draw contours for debugging
-        //drawContours(frame, contours, -1, Scalar(0, 255, 255), 2);
+        
 
         // Display the result
         imshow("frame", frame);
