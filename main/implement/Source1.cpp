@@ -8,8 +8,12 @@ using namespace std;
 
 int main() {
     // Open the webcam
+   // string str = "rtsp://10.31.51.55:8080/h264_pcm.sdp";//"rtsp://admin:12345@10.72.108.141:8554/live";
     VideoCapture cap(0);
+    if (!cap.isOpened()) {
+        cout << "NO"<<endl;
 
+    }
     // Set image dimensions
     int width =1000;
     int height = 760;
@@ -21,17 +25,24 @@ int main() {
     // Calculate frame area
     int area = width * height;
 
+    
     // Initialize average frame
     Mat frame, avg;
+    
     cap.read(frame);
-    //blur(frame, avg, Size(4, 4));
-    avg = frame;
+    blur(frame, avg, Size(4, 4));
+    //avg = frame;
     Mat avgFloat = Mat(avg.size(), CV_32FC3);
     avg.convertTo(avgFloat, CV_32FC3);
 
+    int location_count = 0;
     int count = 0;
     int COUNT = 15;
-    int ant_x[5000], ant_y[5000];
+    int ant_x[18], ant_y[18];
+    for (int i = 0; i < 18; i++) {
+        ant_x[i] = 0;
+        ant_y[i] = 0;
+    }
     int ant_x_avg = 0, ant_y_avg = 0;
 
     int fx=100, fy=100;
@@ -39,9 +50,11 @@ int main() {
     int dir_x=0;
     ifstream in;
     ofstream out;
-
+    ofstream out_location;
     out.open("slope.txt");
+    out_location.open("location.txt");
     while (cap.isOpened()) {
+        
         // Read a frame
         cap.read(frame);
         line(frame, Point(fx, fy), Point(ex, ey), Scalar(0, 255, 255), 2);
@@ -89,7 +102,7 @@ int main() {
 
         for (const auto& c : contours) {
             // Ignore small areas
-            if (contourArea(c)>600)
+            if (contourArea(c)>1000)
                 continue;
             
 
@@ -142,6 +155,13 @@ int main() {
                 ant_y_avg = 0;
             }
             cout << boundingRect.x << " " << boundingRect.y<< endl;
+            out_location<< boundingRect.x << " " << boundingRect.y << endl;
+            location_count++;
+            if (location_count > 1000) {
+                out_location.close();
+                out_location.open("location.txt");
+                location_count = 0;
+            }
             // Draw the rectangle
             rectangle(frame, boundingRect.tl(), boundingRect.br(), Scalar(0, 255, 0), 2);
         }
@@ -162,8 +182,9 @@ int main() {
     }
 
     cap.release();
-   // destroyAllWindows();
+    destroyAllWindows();
     out.close();
+    out_location.close();
     return 0;
 }
 
